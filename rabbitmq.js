@@ -1,25 +1,14 @@
 const amqp = require('amqplib');
 const configs = require("./configs");
+const Logger = require("./logger");
 
 let mq = null;
 amqp.connect(configs.amqp).then(function (conn) {
     return conn.createChannel().then(function (ch) {
         mq = ch;
-        var q = 'hello';
-        var ok = ch.assertQueue(q, {
-            durable: true
-        });
-
-        return ok.then(function () {
-            var msg = "Hello World!" + Date.now();
-            ch.sendToQueue(q, Buffer.from(msg), {
-                deliveryMode: true
-            });
-            console.log(" [x] Sent '%s'", msg);
-            return ch.close();
-        });
+        Logger.info("连接MQ");
     }).finally(function () {
-        conn.close();
+        // conn.close();
     });
 }).catch(console.warn);
 
